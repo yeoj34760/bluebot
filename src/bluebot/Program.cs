@@ -44,6 +44,7 @@ namespace bluebot
             discord.MessageDeleted += Command.BotCommand.MessageDeleted;
             commands.RegisterCommands<BotModule>();
             commands.RegisterCommands<CommandModule>();
+            commands.RegisterCommands<EtcModule>();
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }
