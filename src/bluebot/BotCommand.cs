@@ -25,7 +25,7 @@ namespace bluebot.Command
                     {
                         if (e.Message.Content.ToString().StartsWith(B_Nickname))
                         {
-                            string str = e.Message.Content.ToString().Substring(B_Nickname.Length + 1);
+                            string str = e.Message.Content.ToString().Substring(B_Nickname.Length + 1); //봇 호칭을 문자열에서 제외함
                             JArray items = (JArray)Bot[B_name.Name]["commands"][str];
                             int i = 0;
                             string[] vs = new string[items.Count];

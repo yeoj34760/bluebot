@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DSharpPlus.CommandsNext;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +16,17 @@ namespace bluebot
         static public string NoBlank(string str)
         {
             return str.Replace(" ", null);
+        }
+        public static void NewUser(CommandContext ctx) //최초유저일시 등록
+        {
+            JObject rss2 = Program.rss["User"] as JObject;
+            if (!rss2.ContainsKey(ctx.User.Id.ToString()))
+            {
+                rss2.Add(ctx.User.Id.ToString(),
+                    new JObject(
+                        new JProperty(
+                            "CustomBot", new JObject())));
+            }
         }
     }
 }
