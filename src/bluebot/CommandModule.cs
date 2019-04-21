@@ -39,7 +39,7 @@ namespace bluebot
                             AnswerResult = Answer.Message.Content;
                             JObject rsscommands = rss["User"][ctx.User.Id.ToString()]["CustomBot"][Botname]["commands"] as JObject;
                             rsscommands.Add(new JProperty(utility.NoBlank(QuestionResult),
-                                new JArray(utility.NoBlank(AnswerResult))));
+                                new JArray(AnswerResult)));
                             File.WriteAllText(Path.Info, rss.ToString()); //파일 저장
                             await ctx.RespondAsync("추가 완료");
                         }

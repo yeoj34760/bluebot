@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Info\Help.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Info\Setting.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
