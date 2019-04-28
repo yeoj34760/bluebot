@@ -28,12 +28,12 @@ namespace bluebot
                 {
                     await ctx.RespondAsync($" {ctx.User.Mention}님 1시간안에 질문을 적으세요 \n예시 : 안녕");
                     Console.WriteLine(ctx.Message.Content);
-                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null, TimeSpan.FromHours(1));
+                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                     if (Question != null)
                     {
                         QuestionResult = Question.Message.Content;
                         await ctx.RespondAsync($"{ctx.User.Mention}님 1시간안에 봇이 말할 답변을 적으세요 \n예시 : 방가워!");
-                        var Answer = await interactivity.WaitForMessageAsync(xm => xm.Content != null, TimeSpan.FromHours(1));
+                        var Answer = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                         if (Answer != null)
                         {
                             AnswerResult = Answer.Message.Content;
@@ -72,11 +72,11 @@ namespace bluebot
                     str += "```";
                     await ctx.RespondAsync(str);
                     await ctx.RespondAsync($"{ctx.User.Mention}님 1시간안에 질문(번호)을 적으세요");
-                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null, TimeSpan.FromHours(1));
+                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                     if (Question != null)
                     {
                         await ctx.RespondAsync($"{ctx.User.Mention}님 1시간안에 봇이 말할 답변을 적으세요 \n예시 : 방가워!");
-                        var Answer = await interactivity.WaitForMessageAsync(xm => xm.Content != null, TimeSpan.FromHours(1));
+                        var Answer = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                         if (Answer != null)
                         {
                             JArray Answers = items[vs[int.Parse(Question.Message.Content)]] as JArray;
@@ -114,7 +114,7 @@ namespace bluebot
                     str += "```";
                     await ctx.RespondAsync(str);
                     await ctx.RespondAsync($"{ctx.User.Mention}님 1시간안에 제거할 번호를 적으세요");
-                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null, TimeSpan.FromHours(1));
+                    var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                     if (Question != null)
                     {
                         items.Remove(vs[int.Parse(Question.Message.Content)]);
