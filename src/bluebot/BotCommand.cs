@@ -51,14 +51,21 @@ namespace bluebot.Command
             if ((bool)rss[e.Guild.Id.ToString()]["Logger"] == false) return;
             if (rss[e.Guild.Id.ToString()]["Channel"].ToString() == "") return;
             DiscordChannel Channel = Program.discord.GetChannelAsync((ulong)rss[e.Guild.Id.ToString()]["Channel"]).Result;
-            var embed = new DiscordEmbedBuilder
-            {
-                Title = "Logger",
-                Description = $"이름 : {e.Message.Author.Username}\n내용 : {e.Message.Content}",
-                ThumbnailUrl = e.Message.Author.AvatarUrl,
-                Color = DiscordColor.Blue
+            //var embed = new DiscordEmbedBuilder
+            //{
+            //    Title = "Logger",
 
-            };
+            //    Description = $"이름 : {e.Message.Author}\n채널 : {e.Channel.Mention}\n내용 : {e.Message.Content}",
+            //    ThumbnailUrl = e.Message.Author.AvatarUrl,
+            //    Color = DiscordColor.Blue
+
+            //};
+            var embed = new DiscordEmbedBuilder();
+            embed.Title = "Logger 누군가의해 삭제됨!";
+            embed.ThumbnailUrl = e.Message.Author.AvatarUrl;
+            embed.AddField("이름", e.Message.Author.Username + '#' + e.Message.Author.Discriminator);
+            embed.AddField("채널", e.Channel.Mention);
+            embed.AddField("내용", e.Message.Content);
             await Program.discord.SendMessageAsync(Channel, null, false, embed);
         }
     }
