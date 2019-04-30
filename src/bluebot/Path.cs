@@ -13,5 +13,7 @@ namespace bluebot
            Directory.GetCurrentDirectory() + "\\Info\\Setting.json" : Directory.GetCurrentDirectory() + "/Info/Setting.json";
         public static string Help = (System.Environment.OSVersion.Platform.ToString() == "Win32NT") ?
       Directory.GetCurrentDirectory() + "\\Info\\Help.md" : Directory.GetCurrentDirectory() + "/Info/Help.md";
+        public static string Logger = (System.Environment.OSVersion.Platform.ToString() == "Win32NT") ?
+      Directory.GetCurrentDirectory() + "\\Info\\Logger.json" : Directory.GetCurrentDirectory() + "/Info/Logger.json";
     }
 }

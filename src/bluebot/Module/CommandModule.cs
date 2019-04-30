@@ -8,7 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace bluebot
+namespace bluebot.Module
 {
     class CommandModule : Program
     {

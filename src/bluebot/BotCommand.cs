@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus.EventArgs;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using DSharpPlus.Entities;
 
 namespace bluebot.Command
 {
@@ -45,6 +46,20 @@ namespace bluebot.Command
         public static async Task MessageDeleted(MessageDeleteEventArgs e)
         {
 
+            JObject rss = JObject.Parse(File.ReadAllText(Path.Logger));
+            if (!rss.ContainsKey(e.Guild.Id.ToString())) return;
+            if ((bool)rss[e.Guild.Id.ToString()]["Logger"] == false) return;
+            if (rss[e.Guild.Id.ToString()]["Channel"].ToString() == "") return;
+            DiscordChannel Channel = Program.discord.GetChannelAsync((ulong)rss[e.Guild.Id.ToString()]["Channel"]).Result;
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = "Logger",
+                Description = $"이름 : {e.Message.Author.Username}\n내용 : {e.Message.Content}",
+                ThumbnailUrl = e.Message.Author.AvatarUrl,
+                Color = DiscordColor.Blue
+
+            };
+            await Program.discord.SendMessageAsync(Channel, null, false, embed);
         }
     }
 }

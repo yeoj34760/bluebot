@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using Newtonsoft.Json;
+using bluebot.Module;
 
 namespace bluebot
 {
@@ -24,15 +26,15 @@ namespace bluebot
 
         static async Task MainAsync(string[] args)
         {
-
+            var Settingjson = JsonConvert.DeserializeObject<utility.SettingJson>(File.ReadAllText(Path.Setting));
             discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = Setting["Token"].ToString(),
+                Token = Settingjson.Token,
                 TokenType = TokenType.Bot
             });
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = Setting["Prefix"].ToString()
+                StringPrefix = Settingjson.Prefix
             });
             interactivity = discord.UseInteractivity(new InteractivityConfiguration
             {
@@ -45,6 +47,7 @@ namespace bluebot
             commands.RegisterCommands<BotModule>();
             commands.RegisterCommands<CommandModule>();
             commands.RegisterCommands<EtcModule>();
+            commands.RegisterCommands<LoggerModule>();
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }

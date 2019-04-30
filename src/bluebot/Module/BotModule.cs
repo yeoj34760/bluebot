@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using DSharpPlus.Interactivity;
-namespace bluebot
+namespace bluebot.Module
 {
     class BotModule : Program
     {
