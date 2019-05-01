@@ -27,11 +27,19 @@ namespace bluebot.Module
                 else
                 {
                     await ctx.RespondAsync($" {ctx.User.Mention}님 1시간안에 질문을 적으세요 \n예시 : 안녕");
-                    Console.WriteLine(ctx.Message.Content);
                     var Question = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                     if (Question != null)
                     {
                         QuestionResult = Question.Message.Content;
+                        JObject items = rssbot[Botname]["commands"] as JObject;
+                        foreach (var item in items.Properties())
+                        {
+                            if (items[item.Name].ToString() == QuestionResult)
+                            {
+                                await ctx.RespondAsync("이미 등록이 되어있습니다. '답변추가'를 이용해주세요.");
+                                return;
+                            }
+                        }
                         await ctx.RespondAsync($"{ctx.User.Mention}님 1시간안에 봇이 말할 답변을 적으세요 \n예시 : 방가워!");
                         var Answer = await interactivity.WaitForMessageAsync(xm => xm.Content != null && ctx.User.Id == xm.Author.Id, TimeSpan.FromHours(1));
                         if (Answer != null)

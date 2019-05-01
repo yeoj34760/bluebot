@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -14,10 +15,10 @@ namespace bluebot.Module
     {
         [Group("로그")]
         [Hidden]
+        [RequirePermissions(Permissions.ManageGuild)]
         public class Logger
         {
             [Command("채널")]
-            [Hidden]
             public async Task Channel(CommandContext ctx)
             {
                 utility.NewServer(ctx);
@@ -27,7 +28,6 @@ namespace bluebot.Module
                 await ctx.RespondAsync("이제 이 곳에서 로그가 남습니다.");
             }
             [Command("활성화")]
-            [Hidden]
             public async Task On(CommandContext ctx)
             {
                 utility.NewServer(ctx);
@@ -45,7 +45,6 @@ namespace bluebot.Module
                 File.WriteAllText(Path.Logger, rss.ToString());
             }
             [Command("정보")]
-            [Hidden]
             public async Task Info(CommandContext ctx)
             {
                 utility.NewServer(ctx);
