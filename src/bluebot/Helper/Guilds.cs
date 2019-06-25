@@ -26,19 +26,17 @@ namespace bluebot.Helper
             var discord = client.CreatePCMStream(AudioApplication.Mixed);
             blockSize = 7680;
             buffer = new byte[blockSize];
-            while (playlist.Count != 0)
+            while (playlist.Count != 0) //리스트가 없으면 반복종료함
             {
                 PlayStop = false;
                 PlaySkip = false;
-                List = playlist.Dequeue();
-                if (List.IsDownload == false)
-                {
-                    Youtube youtube = new Youtube();
-                    await youtube.Download(List.VideoId, List.File);
-                }
-                ffmpeg = CreateStream(List.File);
-                await Play(discord);
-                if (PlayStop)
+                List = playlist.Dequeue(); //리스트삭제하고 삭제된 정보를 list에 담음
+                Youtube youtube = new Youtube();
+                await youtube.Download(List.VideoUri, List.File);
+                ffmpeg = CreateStream(List.File); //ffmpeg 실행함
+                await Play(discord); //음악을 틀어줌
+                System.IO.File.Delete(List.File); //음악이 종료되면 파일삭제함
+                if (PlayStop) //true라면 반복종료함
                     break;
             }
             playlist.Clear();
@@ -52,7 +50,7 @@ namespace bluebot.Helper
         public async Task Play(AudioOutStream discord)
         {
             int byteCount;
-         
+
             while (true)
             {
                 if (PlaySkip) //스킵
@@ -62,15 +60,9 @@ namespace bluebot.Helper
                     break;
                 byteCount = await ffmpeg.StandardOutput.BaseStream.ReadAsync(buffer, 0, blockSize);
                 if (byteCount <= 0) //음악이 끝나면
-                {
-                    System.IO.File.Delete(List.File);
                     break;
-                }
                 if (ffmpeg == null)
-                {
-                    System.IO.File.Delete(List.File);
                     break;
-                }
                 if (PlayPause) //일시중지
                     continue;
                 await discord.WriteAsync(buffer, 0, byteCount);
@@ -79,12 +71,12 @@ namespace bluebot.Helper
 
         public void Stop()
         {
-            Kill();
+            try { Kill(); } catch (SystemException) { }
             PlayStop = true;
         }
         public void Skip()
         {
-            Kill();
+            try { Kill(); } catch (SystemException) { }
             PlaySkip = true;
         }
         private void Kill()

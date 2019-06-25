@@ -8,7 +8,8 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using System.Web;
+using System.Net;
 namespace bluebot.Helper
 {
     public class Youtube : OtherService
@@ -21,9 +22,10 @@ namespace bluebot.Helper
         {
              var youtube = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = "Key", // 키 지정
+                ApiKey = JsonService.Config.YoutubeAPIKey, // 키 지정
                 ApplicationName = "bluebotAPI"
             });
+            
             var request = youtube.Search.List("snippet");
             request.Q = str; //검색 예시 : 진진자라
             request.MaxResults = 5; //최대 검색량
@@ -43,13 +45,27 @@ namespace bluebot.Helper
             text += "```";
             return text;
         }
-        public async Task Download(string VideoId, string File)
+        public async Task Download(string strUri, string File)
         {
             Process p = new Process();
             p.StartInfo.FileName = "youtube-dl";
-            p.StartInfo.Arguments = $@"--extract-audio -o {File} --audio-format mp3 https://www.youtube.com/watch?v={VideoId}";
+            p.StartInfo.Arguments = $@"--extract-audio -o {File} --audio-format mp3 {strUri}";
             p.Start();
             p.WaitForExit();
+        }
+        public string GetTitle(string url) //https://stackoverflow.com/questions/22108268/how-to-get-youtube-video-title-using-url
+        {
+            var api = $"http://youtube.com/get_video_info?video_id={GetArgs(url, "v", '?')}";
+            return GetArgs(new WebClient().DownloadString(api), "title", '&');
+        }
+
+        private string GetArgs(string args, string key, char query)
+        {
+            var iqs = args.IndexOf(query);
+            return iqs == -1
+                ? string.Empty
+                : HttpUtility.ParseQueryString(iqs < args.Length - 1
+                    ? args.Substring(iqs + 1) : string.Empty)[key];
         }
     }
 }

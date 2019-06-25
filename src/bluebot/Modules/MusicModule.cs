@@ -21,12 +21,25 @@ namespace bluebot.Modules
         }
         IAudioClient client;
         [Command("플레이", RunMode = RunMode.Async)]
+        public async Task PingAsync()
+        {
+            await ReplyAsync("제목을 적으세요");
+        }
+        [Command("플레이", RunMode = RunMode.Async)]
         public async Task PingAsync(params string[] str)
         {
+            bool isUri = Uri.IsWellFormedUriString(string.Join(' ', str), UriKind.RelativeOrAbsolute);
+           
+            if ((Context.User as IVoiceState).VoiceChannel == null)
+            {
+                await ReplyAsync("음성 방에 있어야합니다.");
+                return;
+            }
             await m_music.GuildAdd(Context.Guild.Id);
             m_music.m_Interactive = base.Interactive;
-            await m_music.PlayAsync(string.Join(' ', str));
+            await m_music.PlayAsync(string.Join(' ', str), isUri);
         }
+
         [Command("스킵", RunMode = RunMode.Async)]
         public async Task SkipAsync()
         {
@@ -39,13 +52,7 @@ namespace bluebot.Modules
             await m_music.GuildAdd(Context.Guild.Id);
             await m_music.PlayPause();
         }
-        [Command("추가", RunMode = RunMode.Async)]
-        public async Task PlayListAddCmd(params string[] str)
-        {
-            await m_music.GuildAdd(Context.Guild.Id);
-            m_music.m_Interactive = base.Interactive;
-            await m_music.PlayListAddAsync(string.Join(' ', str));
-        }
+
         [Command("리스트")]
         public async Task PlayListAsync()
         {

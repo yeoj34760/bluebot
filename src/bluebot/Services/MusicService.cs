@@ -17,44 +17,47 @@ namespace bluebot.Services
         public InteractiveService m_Interactive; //상호작용
         private Dictionary<ulong, Guilds> m_Guild = new Dictionary<ulong, Guilds>();
         Youtube youtube;
-        public async Task PlayAsync(string str)
+        public async Task PlayAsync(string str, bool IsUri)
         {
-            if (m_Guild[context.Guild.Id].IsPlaying == true)
-            {
-                await ReplyChannel("현재 음악 재생중입니다!\n !중지, !추가 명령어를 이용하십시오");
-                return;
-            }
-            m_Guild[context.Guild.Id].IsPlaying = true;
             youtube = new Youtube();
             Random random = new Random();
             string VideoId, Title, File = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".mp3";
-            string YoutubeList = youtube.List(str).Result;
-            if (YoutubeList == null)
+         
+            Playlist playlist = new Playlist();
+            playlist.File = File;
+            if (IsUri == true) //str 값이 uri라면
             {
-
-                await ReplyChannel("`검색 결과가 없습니다.`");
+                playlist.Title = youtube.GetTitle(str);
+                playlist.VideoUri = str;
+            }
+            else
+            {
+                string YoutubeList = youtube.List(str).Result; //검색함
+                if (YoutubeList == null) //검색 결과가 없으면
+                {
+                    await ReplyChannel("`검색 결과가 없습니다.`");
+                    return;
+                }
+                await ReplyChannel(YoutubeList); //검색결과
+                var response = await m_Interactive.NextMessageAsync(context); //대화식 생성
+                if (response != null)
+                {
+                    int i = int.Parse(response.Content.ToString()); //유저가 입력한 값을 int으로 변경
+                    VideoId = youtube.VideoId[i - 1];
+                    Title = youtube.Title[i - 1];
+                    playlist.Title = Title;
+                    playlist.VideoUri = "https://www.youtube.com/watch?v=" + VideoId;
+                }
+            }
+            m_Guild[context.Guild.Id].playlist.Enqueue(playlist);
+            if (m_Guild[context.Guild.Id].IsPlaying != true)
+            {
+                m_Guild[context.Guild.Id].IsPlaying = true;
+                await ReplyChannel("`곧 음악이 재생됩니다 (영상 길이에 따라 늦게 음악을 재생할 수 있습니다!)`");
+                await m_Guild[context.Guild.Id].PlayStartAsync();
                 return;
             }
-            await ReplyChannel(YoutubeList);
-            var response = await m_Interactive.NextMessageAsync(context);
-            
-            if (response != null)
-            {
-                int i = int.Parse(response.Content.ToString());
-                VideoId = youtube.VideoId[i - 1];
-                Title = youtube.Title[i - 1];
-                Playlist playlist = new Playlist();
-                await ReplyChannel("찾는중...");
-                Console.WriteLine(VideoId + "알라봉따이");
-                await youtube.Download(VideoId, File);
-                playlist.IsDownload = true;
-                playlist.Title = Title;
-                playlist.VideoId = VideoId;
-                playlist.File = File;
-                await ReplyChannel("준비완료! 곧 음악이 재생됩니다.");
-                m_Guild[context.Guild.Id].playlist.Enqueue(playlist);
-                await m_Guild[context.Guild.Id].PlayStartAsync();
-            }
+            await ReplyChannel("`추가완료`");
         }
 
         public async Task ListAsync()
@@ -73,33 +76,32 @@ namespace bluebot.Services
             str += "```";
             await ReplyChannel(str);
         }
-        public async Task PlayListAddAsync(string str)
-        {
-            if (m_Guild[context.Guild.Id].IsPlaying == false)
-            {
-                await ReplyChannel("`!플레이 <제목>`를 이용하십시오.");
-                return;
-            }
-            youtube = new Youtube();
-            Random random = new Random();
-            string VideoId, Title, File = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".mp3";
-            await ReplyChannel(youtube.List(str).Result);
-            var response = await m_Interactive.NextMessageAsync(context);
-            if (response != null)
-            {
-                Playlist playlist = new Playlist();
-                int i = int.Parse(response.Content.ToString());
-                VideoId = youtube.VideoId[i - 1];
-                Title = youtube.Title[i - 1];
-                playlist.IsDownload = false;
-                playlist.Title = Title;
-                playlist.VideoId = VideoId;
-                playlist.File = File;
-                m_Guild[context.Guild.Id].playlist.Enqueue(playlist);
-                await ReplyChannel("추가완료");
-            }
+        //public async Task PlayListAddAsync(string str)
+        //{
+        //    if (m_Guild[context.Guild.Id].IsPlaying == false)
+        //    {
+        //        await ReplyChannel("`!플레이 <제목>`를 이용하십시오.");
+        //        return;
+        //    }
+        //    youtube = new Youtube();
+        //    Random random = new Random();
+        //    string VideoId, Title, File = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".mp3";
+        //    await ReplyChannel(youtube.List(str).Result);
+        //    var response = await m_Interactive.NextMessageAsync(context);
+        //    if (response != null)
+        //    {
+        //        Playlist playlist = new Playlist();
+        //        int i = int.Parse(response.Content.ToString());
+        //        VideoId = youtube.VideoId[i - 1];
+        //        Title = youtube.Title[i - 1];
+        //        playlist.Title = Title;
+        //        playlist.VideoId = VideoId;
+        //        playlist.File = File;
+        //        m_Guild[context.Guild.Id].playlist.Enqueue(playlist);
+        //        await ReplyChannel("추가완료");
+        //    }
 
-        }
+        //}
 
         public async Task PlayStop()
         {

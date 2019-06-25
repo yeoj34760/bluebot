@@ -1,5 +1,6 @@
 ﻿{
 
-  "Token": "token",
-  "Prefix": "!"
+  "Token": "Key",
+  "Prefix": "!",
+  "YoutubeAPIKey": "Key"
 }

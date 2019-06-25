@@ -13,6 +13,6 @@ namespace bluebot.Modules
     {
         [Command("도움말")]
         public async Task PingAsync() => await ReplyAsync($"```Markdown\n{System.IO.File.ReadAllText("Help.md")}```");
-
+        
     }
 }
